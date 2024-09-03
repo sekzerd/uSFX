@@ -11,6 +11,7 @@
 
 void app_debug_handler(QtMsgType type, const QMessageLogContext &context,
                        const QString &msg) {
+#ifdef QT_DEBUG
     static QMutex mutex;
     mutex.lock();
     static QFile logFile("log.txt");
@@ -41,15 +42,16 @@ void app_debug_handler(QtMsgType type, const QMessageLogContext &context,
     buffer += QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz ");
 
     buffer += msg;
-#ifdef QT_DEBUG
+
     buffer += " (";
     buffer += QString(context.file);
     buffer += ":";
     buffer += QString::number(context.line);
     buffer += ") ";
-#endif
+
     out << buffer << endl;
     qDebug() << buffer;
     mutex.unlock();
+#endif
 }
 #endif // APPUTILS_H
