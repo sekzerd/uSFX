@@ -1,0 +1,4 @@
+#!%__uSFX_SPLIT_START_dd5de4df__%!#
+[app]
+entry="BY_PixArtMouseUpgradeTool.exe"
+#!%__uSFX_SPLIT_END_dd5de4df__%!#

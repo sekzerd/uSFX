@@ -1,0 +1,1 @@
+ copy /b uSFX.exe + config.txt + 1.zip output.exe /y
