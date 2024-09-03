@@ -14,9 +14,9 @@ HEADERS += AppUtils.h
 
 RC_ICONS = icon.ico
 VERSION = 1.0.0.0
-MAKE_TARGET_COMPANY = "BeiYingTechnology"
+MAKE_TARGET_COMPANY = "Company"
 QMAKE_TARGET_DESCRIPTION = "uSFX"
-QMAKE_TARGET_COPYRIGHT = "BeiYingTechnology Copyright(C) 2024"
+QMAKE_TARGET_COPYRIGHT = "Company Copyright(C) 2024"
 QMAKE_TARGET_PRODUCT = "uSFX"
 
 
