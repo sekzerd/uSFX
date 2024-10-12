@@ -7,7 +7,8 @@ CONFIG += c++11
 SOURCES += main.cpp
 #    MainWindow.cpp
 
-HEADERS += AppUtils.h
+HEADERS += \
+    utils.h
 #    MainWindow.h
 
 #FORMS += MainWindow.ui

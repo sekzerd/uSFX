@@ -1,89 +1,21 @@
-#include "AppUtils.h"
+#include "utils.h"
 // #include "MainWindow.h"
-#include "quazip/JlCompress.h"
-#include <QCoreApplication>
 
 // #include <QApplication>
 // #include <QMessageBox>
 
 #include <QBuffer>
-
+#include <QCoreApplication>
 #include <QFile>
 #include <QIODevice>
 #include <QProcess>
 #include <QSettings>
-#include <QStandardPaths>
 #include <QTemporaryFile>
-#include <QUuid>
 #include <QtDebug>
+#include <QtGlobal>
 
 static QString SPLIT_FLAG_START = "#!%__uSFX_SPLIT_START_dd5de4df__%!#";
 static QString SPLIT_FLAG_END = "#!%__uSFX_SPLIT_END_dd5de4df__%!#";
-
-static QString random_string() {
-    QUuid uuid = QUuid::createUuid();
-    return uuid.toString().remove('{').remove('}');
-}
-
-static QStringList decompress_file(const QString &input_file,
-                                   const QString &output_dir) {
-    return JlCompress::extractDir(input_file, output_dir);
-}
-static QString temp_dir(QString suffix) {
-    QString tempDir =
-        QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-    QString t = tempDir + "/uSFX_" + suffix;
-    return t;
-}
-
-static bool init_dir(QString suffix) {
-    QString tempDir =
-        QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-    QString t = tempDir + "/uSFX_" + suffix;
-    return QDir().mkpath(t);
-}
-
-static bool clean_dir(QString suffix) {
-    QString tempDir =
-        QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-    QString t = tempDir + "/uSFX_" + suffix;
-    QDir dir(t);
-    return dir.removeRecursively();
-}
-
-QByteArray extract_self() { //    MainWindow w;
-    //    w.show();
-    QString appPath = QCoreApplication::applicationFilePath();
-    //    qDebug() << "App Path:" << appPath;
-    QFile app(appPath);
-    if (!app.exists()) {
-        qDebug() << "!app.exists()";
-        return "";
-    }
-    if (!app.open(QFile::OpenMode::enum_type::ReadOnly)) {
-        qDebug() << "!app.open(QFile::OpenMode::enum_type::ReadOnly)";
-        return "";
-    }
-    return app.readAll();
-}
-
-bool write_bin_to_file(const QString &filePath, const QByteArray &data) {
-    QFile file(filePath);
-    if (!file.open(QIODevice::WriteOnly)) {
-        qWarning() << "Failed to open file:" << file.errorString();
-        return false;
-    }
-    file.write(data);
-
-    //    QDataStream out(&file);
-    //    out << data;
-    if (!file.flush()) {
-        qWarning() << "Failed to flush data to file:" << file.errorString();
-        return false;
-    }
-    file.close();
-    return true;
-}
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
@@ -145,7 +77,7 @@ int main(int argc, char *argv[]) {
     //    auto f = write_bin_to_file("test.zip", zip);
     //    qDebug() << "write file test.zip:" << f;
 
-    QString zip_file_name = temp_dir(random_suffix) + "/test.zip";
+    QString zip_file_name = temp_dir(random_suffix) + "/temp.zip";
 
     qDebug() << "output path:" << zip_file_name;
     auto f = write_bin_to_file(zip_file_name, zip);
@@ -154,8 +86,11 @@ int main(int argc, char *argv[]) {
 
     auto files = decompress_file(zip_file_name, zip_file_dir);
     qDebug() << "decompress_file:" << files;
-    QProcess process;
+    if (files.length() != 0) {
+        QFile::remove(zip_file_name);
+    }
 
+    QProcess process;
     QString programPath =
         zip_file_dir + "/" + settings.value("app/entry").toString();
     QStringList arguments;
