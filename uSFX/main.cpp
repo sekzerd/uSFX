@@ -16,8 +16,14 @@
 
 static QString SPLIT_FLAG_START = "#!%__uSFX_SPLIT_START_dd5de4df__%!#";
 static QString SPLIT_FLAG_END = "#!%__uSFX_SPLIT_END_dd5de4df__%!#";
-
-int main(int argc, char *argv[]) {
+static QByteArray decrypt(const QByteArray& data) {
+    QByteArray ret;
+    for (auto i = 0; i < data.length(); i++) {
+        ret.push_back((unsigned char)~data[i]);
+    }
+    return ret;
+}
+int main(int argc, char* argv[]) {
     QCoreApplication a(argc, argv);
     //    QApplication a(argc, argv);
 
@@ -80,7 +86,11 @@ int main(int argc, char *argv[]) {
     QString zip_file_name = temp_dir(random_suffix) + "/temp.zip";
 
     qDebug() << "output path:" << zip_file_name;
-    auto f = write_bin_to_file(zip_file_name, zip);
+    auto decryto_data = decrypt(zip);
+    qDebug() << "data len:" << zip.length();
+    qDebug() << "decryto len:" << decryto_data.length();
+
+    auto f = write_bin_to_file(zip_file_name, decryto_data);
     qDebug() << "write_bin_to_file:" << f;
     QString zip_file_dir = temp_dir(random_suffix);
 
@@ -91,8 +101,7 @@ int main(int argc, char *argv[]) {
     }
 
     QProcess process;
-    QString programPath =
-        zip_file_dir + "/" + settings.value("app/entry").toString();
+    QString programPath = zip_file_dir + "/" + settings.value("app/entry").toString();
     QStringList arguments;
     process.setWorkingDirectory(zip_file_dir);
     process.start(programPath, arguments);
